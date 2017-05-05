@@ -2,7 +2,7 @@ module Api::V1
   # Use pagination, see http://jsonapi.org/examples/#pagination
   # GET /cards?page[number]=3&page=1&per_page=10
   class CardsController < ApplicationController
-    before_action :authenticate_user, only: [:vocabulary]
+    before_action :authenticate_user, only: [:study_schedule]
 
     # TODO: Maybe add pagination here?
     # GET /api/v1/cards
@@ -14,49 +14,33 @@ module Api::V1
       render json: card_list
     end
 
-    # GET /api/v1/vocabulary
-    # curl localhost:8080/api/v1/vocabulary --header "token: 1234"
+    # GET /api/v1/study_schedule
+    # curl localhost:8080/api/v1/study_schedule --header "token: 1234"
     # Return the cards, as an array of card ids, that the user has to study in order of priority (next one first)
     # Support paging with page and per_page parameters
-    # TODO: to much computation in that method, optimize
-    def vocabulary
-
-      # Sort the full deck by 'next_time_up' increasing order
-      voc = @current_user.deck[:cards].sort do |a, b|
-        a[1][:next_time_up] <=> b[1][:next_time_up]
-      end
-      
-      # Separate the card ids from the next_time_up value,
-      # in two different arrays.
-      card_ids = []
-      card_times = []
-      voc.each do |id,time_hash|
-        card_ids << id
-        card_times << time_hash[:next_time_up]
-      end
-      
+    def study_schedule
+      # The deck is already sorted in redis (zset) so we don't have much to do!
+      deck_params = {}
+      deck_params[:page] = params[:page].to_i if params[:page].present?
+      deck_params[:per_page] = params[:per_page].to_i if params[:per_page].present?
+      deck = @current_user.deck(deck_params)
       render json: {
-        card_ids: paginate_array(card_ids),
-        card_times: paginate_array(card_times),
+        deck: deck,
         server_time: Time.now.to_i
       }
     end
 
     private
 
-    def paginate_array(array)
-      page = params[:page].to_i || 1
-      per_page = params[:per_page].to_i || 0
-      array[(page - 1) * per_page..(page * per_page - 1)]
-    end
-
     # Called once and cached
     def generate_card_list
+      list = {}
       cards = Card.all
-      cards.map do |card|
+      cards.each do |card|
         serialization = ActiveModelSerializers::SerializableResource.new(card)
-        { card.id => serialization.as_json }
+        list[card.id] = serialization.as_json
       end
+      list
     end
   end
 end

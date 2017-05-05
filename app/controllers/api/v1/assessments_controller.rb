@@ -6,11 +6,15 @@ module Api::V1
     # curl -X POST localhost:8080/api/v1/assessments/1 --header "token: 1234"
     # User rated a card
     def assess
-      # TODO: error check for rating in[0..5]
-      # TODO: put the list of id's in the cache too
-      card_ids = Card.all.pluck(:id)
+      # Check that card_id and rating are valid
+      card_ids = Rails.cache.fetch 'card_ids' do
+        Card.all.pluck(:id)
+      end
       unless card_ids.include? params[:card_id].to_i
         render(json: { error: "Unknown card id #{params[:card_id]}" }, status: 422) and return
+      end
+      unless (0..5).to_a.include? params[:rating].to_i
+        render(json: { error: "Invalid rating value #{params[:rating]}" }, status: 422) and return
       end
 
       # Update the user deck using a space repetition algorithm

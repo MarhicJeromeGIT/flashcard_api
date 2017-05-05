@@ -7,11 +7,11 @@ class AssessmentsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'get a 401 if user is not authenticated' do
-    post '/api/v1/assessments/12345',
+    post "/api/v1/assessments/#{Card.first.id}",
          params: { rating: 5 }
     assert_response 401
 
-    post '/api/v1/assessments/12345',
+    post "/api/v1/assessments/#{Card.first.id}",
          headers: { token: 'wrongusertoken' },
          params: { rating: 5 }
     assert_response 401

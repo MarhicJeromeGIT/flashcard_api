@@ -3,6 +3,7 @@ require 'test_helper'
 class FrontendFlowTest < ActionDispatch::IntegrationTest
   def setup
     Rails.cache.clear
+    clear_redis
     FactoryGirl.create_list(:card, 30)
     @user = create(:user)
   end
@@ -18,18 +19,18 @@ class FrontendFlowTest < ActionDispatch::IntegrationTest
     assert_not_empty(cards)
 
     per_page = 5
-    get '/api/v1/vocabulary',
+    get '/api/v1/study_schedule',
         params: { page: 1, per_page: per_page },
         headers: { token: @user.token }
     data = JSON.parse response.body
-    voc = data['card_ids']
-    assert_equal(per_page, voc.count)
+    deck = data['deck']
+    assert_equal(per_page, deck.count)
     # Make sure we already have the cards referenced
-    voc.each do |card_id|
-      assert_not_nil(1, cards[card_id])
+    deck.each do |card_id, _timestamp|
+      assert_not_nil(cards[card_id])
     end
 
-    post "/api/v1/assessments/#{voc.first}",
+    post "/api/v1/assessments/#{deck[0][0]}",
          headers: { token: @user.token },
          params: { rating: 5 }
     assert_response :success

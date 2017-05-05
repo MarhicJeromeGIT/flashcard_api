@@ -3,32 +3,42 @@
 class SM2
   DEFAULT_E_FACTOR = 2.5
 
-  # SM2 'object'
-  # {
-  #    repetition: number of repetitions
-  #    e_factor: see algo
-  #    interval: when the card will show up again, in days
-  # }
-  def new_sm2_hash
-    {
-      repetition: 0,
-      e_factor: SM2::DEFAULT_E_FACTOR,
-      interval: 0
-    }
+  def format_key(user_id:, card_id:)
+    "users/#{user_id}/sm2/#{card_id}"
   end
 
-  # Evaluate and return an sm2 object depending on the rating given by the user
-  def evaluate(sm2:, rating:)
-    new_sm2 = sm2
-    new_sm2[:repetition] += 1
+  # Evaluate a card with a given rating, and determine and update it's e_factor.
+  # Return the interval of time in days when the card should show up again.
+  def evaluate(user_id:, card_id:, rating:)
+    key = format_key(user_id: user_id, card_id: card_id)
+    repetition = if $redis.hexists key, 'repetition'
+                   # funny that there is no integer type in redis ?
+                   repetition = $redis.hget key, 'repetition'
+                   repetition.to_i
+                 else
+                   0
+                 end
+    e_factor = if $redis.hexists key, 'e_factor'
+                 e_factor = $redis.hget key, 'e_factor'
+                 e_factor.to_f
+               else
+                 SM2::DEFAULT_E_FACTOR
+               end
+
     if rating >= 3
-      new_e_factor = compute_new_e_factor(rating: rating, e_factor: sm2[:e_factor] || SM2::DEFAULT_E_FACTOR)
-      new_sm2[:e_factor] = new_e_factor
+      e_factor = compute_new_e_factor(rating: rating, e_factor: e_factor)
+      repetition += 1
     else # start repetitions for the item from the beginning without changing the E-Factor
-      new_sm2[:repetition] = 1
+      repetition = 1
     end
-    new_sm2[:interval] = interval(repetition: new_sm2[:repetition] || 1, e_factor: new_sm2[:e_factor])
-    sm2
+
+    # Update redis data:
+    $redis.hmset format_key(user_id: user_id, card_id: card_id),
+                 'repetition', repetition,
+                 'e_factor', e_factor
+
+    # Determine and return the amount of time when the card should show up again
+    interval(repetition: repetition, e_factor: e_factor)
   end
 
   # Compute the repetition interval (in days)

@@ -8,14 +8,11 @@ module Apidoc
       key :swagger, '2.0'
       info do
         key :version, '1.0'
-        key :title, 'SuperMemo2 API'
-        key :description, 'TODO'
+        key :title, 'SuperMemo2 API - Developer project by Jerome Marhic'
+        key :description, 'Spaced repetition system based on the SuperMemo 2.0 algorithm'
         key :termsOfService, ''
         contact do
           key :name, 'Marhic Jérôme'
-        end
-        license do
-          key :name, 'MIT'
         end
       end
       tag do
@@ -49,7 +46,7 @@ module Apidoc
       Apidoc::AssessmentsDocController,
       Apidoc::StatisticsDocController,
       Apidoc::Card,
-      Apidoc::Deck,
+      Apidoc::StudySchedule,
       Apidoc::AssessmentInput,
       self
     ].freeze

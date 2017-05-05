@@ -30,11 +30,17 @@ group :development, :test do
   gem 'byebug', platform: :mri
 end
 
+gem 'listen', '~> 3.0.5'
+
 group :development do
-  gem 'listen', '~> 3.0.5'
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring'
   gem 'spring-watcher-listen', '~> 2.0.0'
+  gem 'capistrano', '~> 3.6'
+  gem 'capistrano-rails', '~> 1.1'
+  gem 'capistrano-passenger'
+  gem 'capistrano-rvm'
+  gem 'capistrano-bundler'
 end
 
 group :test do
@@ -46,6 +52,7 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 gem 'rubocop', require: false
 # Use redis for caching
 gem 'redis-rails'
+gem 'redis-namespace'
 # Define and serve live-updating Swagger JSON for Ruby apps.
 gem 'swagger-blocks'
 gem 'rack-cors', :require => 'rack/cors'

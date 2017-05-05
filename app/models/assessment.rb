@@ -5,30 +5,29 @@
 # {
 #   elapsed_time: (in ms, time spent before answering)
 #   rating: (in [0..5], user self evaluation score)
-#   time: in sec, the server time when the card was assessed
+#   time: in sec, the server time when the card was assessed (ensure the hash is unique, and may be useful for statistics later)
 # }
 class Assessment
-  def self.format_request(user_id:, card_id:)
-    "users/#{user_id}/cards/#{card_id}"
-  end
-
   def self.add(user_id:, card_id:, elapsed_time:, rating:)
     # TODO: Add validation of inputs + SLACK hook for error handlers
-    previous_assessments = Rails.cache.fetch format_request(user_id: user_id, card_id: card_id) do
-      []
-    end
-    previous_assessments << {
+    new_assessment = {
       elapsed_time: elapsed_time,
       rating: rating,
       time: Time.now.to_i
     }
-    Rails.cache.write format_request(user_id: user_id, card_id: card_id), previous_assessments
+    $redis.lpush format_key(user_id: user_id, card_id: card_id),
+                 new_assessment.to_json
   end
 
-  # Return an array of the user assessments for the given card.
+  # Return an array of the user assessments hashes for the given card.
   def self.get(user_id:, card_id:)
-    Rails.cache.fetch format_request(user_id: user_id, card_id: card_id) do
-      []
-    end
+    response = $redis.lrange format_key(user_id: user_id, card_id: card_id), 0, -1
+    response.map { |str| JSON.parse str }
+  end
+
+  private
+
+  def self.format_key(user_id:, card_id:)
+    "users/#{user_id}/cards/#{card_id}"
   end
 end

@@ -1,7 +1,9 @@
 require 'test_helper'
 
 class UserTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+  test 'new user have a deck' do
+    FactoryGirl.create_list(:card, 30)
+    user = create(:user)
+    assert_not_empty(user.deck)
+  end
 end

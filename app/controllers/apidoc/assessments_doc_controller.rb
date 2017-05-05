@@ -5,6 +5,7 @@ module Apidoc
     swagger_path '/assessments/{card_id}' do
       operation :post do
         extend SwaggerResponses::AuthenticationError
+        extend SwaggerResponses::ParameterError
         key :description, 'Post the user assessment for a given card id'
         key :operationId, 'assessments'
         key :tags, [

@@ -1,26 +1,28 @@
 require 'test_helper'
 
 class SM2Test < ActiveSupport::TestCase
-  def setup
-    @algo = SM2.new
-  end
-
   test 'that for q=4 the E-Factor does not change.' do
-    sm2 = @algo.new_sm2_hash
-    original_e_factor = sm2[:e_factor]
-    repetitions = 4
-    repetitions.times do
-      sm2 = @algo.evaluate(sm2: sm2, rating: 4)
-    end
-    assert_equal(sm2[:repetition], repetitions)
-    assert_equal(sm2[:e_factor], original_e_factor)
+    original_e_factor = 2
+    e_factor = SM2.new.compute_new_e_factor(rating: 4, e_factor: original_e_factor)
+    assert_equal(original_e_factor, e_factor)
+
+    original_e_factor = 2.5
+    e_factor = SM2.new.compute_new_e_factor(rating: 4, e_factor: original_e_factor)
+    assert_equal(original_e_factor, e_factor)
+
+    original_e_factor = 4
+    e_factor = SM2.new.compute_new_e_factor(rating: 4, e_factor: original_e_factor)
+    assert_equal(original_e_factor, e_factor)
+
+    original_e_factor = 5
+    e_factor = SM2.new.compute_new_e_factor(rating: 4, e_factor: original_e_factor)
+    assert_equal(original_e_factor, e_factor)
   end
 
   test 'interval ending conditions' do
-    sm2 = @algo.new_sm2_hash
-    sm2 = @algo.evaluate(sm2: sm2, rating: 5)
-    assert_equal(1.day, sm2[:interval])
-    sm2 = @algo.evaluate(sm2: sm2, rating: 5)
-    assert_equal(6.days, sm2[:interval])
+    interval = SM2.new.interval(repetition: 1, e_factor: 5)
+    assert_equal(1.day, interval)
+    interval = SM2.new.interval(repetition: 2, e_factor: 4)
+    assert_equal(6.days, interval)
   end
 end

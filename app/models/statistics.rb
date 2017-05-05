@@ -5,8 +5,8 @@ class Statistics < ApplicationRecord
     # TODO: let the user select scale, ie month-by-month, week-by-week etc?
     current_time = Time.now.to_i
     results = Hash.new(0)
-    deck[:cards].each do |_key, card_data|
-      diff_months = (card_data[:next_time_up] - current_time).to_f / 1.month.to_f
+    deck.each do |_card_id, timestamp|
+      diff_months = (timestamp - current_time).to_f / 1.month.to_f
       # Classify:
       # - 0 : the late cards (they should have been studied already).
       # - 1 : forecast to appear within the next month
@@ -19,10 +19,12 @@ class Statistics < ApplicationRecord
 
   def self.answer_buttons(user_id:)
     buttons = Hash.new(0)
+    sum = 0
     Card.all.each do |card|
       assessments = Assessment.get(user_id: user_id, card_id: card.id)
+      sum += assessments.count
       assessments.each do |assessment|
-        rating = assessment[:rating]
+        rating = assessment['rating']
         buttons[rating] += 1
       end
     end
@@ -35,7 +37,7 @@ class Statistics < ApplicationRecord
       times[card.id] = 0
       assessments = Assessment.get(user_id: user_id, card_id: card.id)
       assessments.each do |assessment|
-        elapsed_time = assessment[:elapsed_time]
+        elapsed_time = assessment['elapsed_time']
         times[card.id] += elapsed_time
       end
     end

@@ -3,6 +3,7 @@ require 'test_helper'
 class StatisticsIntegrationTest < ActionDispatch::IntegrationTest
   def setup
     Rails.cache.clear
+    clear_redis
     FactoryGirl.create_list(:card, 30)
     @user = create(:user)
   end

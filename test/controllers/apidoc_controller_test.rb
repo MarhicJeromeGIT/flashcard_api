@@ -6,5 +6,8 @@ class ApidocControllerTest < ActionDispatch::IntegrationTest
     # get 'online.swagger.io/validator/debug?url=http://interview-marhicjeromegit.c9users.io:8080/apidoc.json'
     # assert_response 200
     # spec = JSON.parse response.body
+
+    get '/apidoc'
+    assert_response :success
   end
 end

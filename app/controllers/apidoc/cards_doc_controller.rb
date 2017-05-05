@@ -12,16 +12,18 @@ module Apidoc
         response 200 do
           key :description, 'deck response'
           schema do
-            key :'$ref', :Card
+            key :'$ref', :CardId
           end
         end
       end
     end
 
-    swagger_path '/vocabulary' do
+    swagger_path '/study_schedule' do
       operation :get do
-        key :description, 'Return the next cards the user has to study'
-        key :operationId, 'cards'
+        key :description, 'For each card, return the time (as a timestamp) when the ' \
+                          'card has to be studied next. Sorted by increasing time. ' \
+                          'Also provide the server current time for reference.'
+        key :operationId, 'study_schedule'
         key :tags, [
           'cards'
         ]
@@ -43,12 +45,9 @@ module Apidoc
           key :format, :int64
         end
         response 200 do
-          key :description, 'deck response'
+          key :description, 'schedule response'
           schema do
-            key :type, :array
-            items do
-              key :type, :integer
-            end
+            key :'$ref', :StudySchedule
           end
         end
       end
