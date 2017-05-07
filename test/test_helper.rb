@@ -8,7 +8,7 @@ class ActiveSupport::TestCase
 
   # Add more helper methods to be used by all tests here...
   include FactoryGirl::Syntax::Methods
-  
+
   def clear_redis
     # Only clear the keys that belong to our namespace
     namespace = $redis.namespace

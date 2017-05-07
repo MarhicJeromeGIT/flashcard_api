@@ -2,13 +2,12 @@ module Api::V1
   # Use pagination, see http://jsonapi.org/examples/#pagination
   # GET /cards?page[number]=3&page=1&per_page=10
   class CardsController < ApplicationController
-    before_action :authenticate_user, only: [:study_schedule]
+    before_action :authenticate_user, only: [:study_schedule, :todays_session]
 
-    # TODO: Maybe add pagination here?
     # GET /api/v1/cards
     # curl localhost:8080/api/v1/cards
     def index
-      card_list = Rails.cache.fetch 'cards' do
+      card_list = Rails.cache.fetch 'cards', expires_in: 1.hour do
         generate_card_list
       end
       render json: card_list
@@ -28,6 +27,11 @@ module Api::V1
         deck: deck,
         server_time: Time.now.to_i
       }
+    end
+
+    # Return the cards we have to study today
+    def todays_session
+      render json: @current_user.todays_session
     end
 
     private

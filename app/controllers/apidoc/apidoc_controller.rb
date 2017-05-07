@@ -27,6 +27,10 @@ module Apidoc
         key :name, 'statistics'
         key :description, 'Statistics operations'
       end
+      tag do
+        key :name, 'users'
+        key :description, 'Users operations'
+      end
       parameter :token do
         key :name, :token
         key :in, :header
@@ -45,6 +49,7 @@ module Apidoc
       Apidoc::CardsDocController,
       Apidoc::AssessmentsDocController,
       Apidoc::StatisticsDocController,
+      Apidoc::UsersDocController,
       Apidoc::Card,
       Apidoc::StudySchedule,
       Apidoc::AssessmentInput,

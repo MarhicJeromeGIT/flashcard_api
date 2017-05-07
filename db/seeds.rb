@@ -10,7 +10,7 @@ Card.delete_all
 User.delete_all
 
 # Create some default cards
-100.times do
+5.times do
   r1 = rand(100)
   r2 = rand(100)
   Card.create(

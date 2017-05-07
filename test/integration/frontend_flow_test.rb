@@ -32,7 +32,7 @@ class FrontendFlowTest < ActionDispatch::IntegrationTest
 
     post "/api/v1/assessments/#{deck[0][0]}",
          headers: { token: @user.token },
-         params: { rating: 5 }
+         params: { rating: 5, elapsed_time: 1000 }
     assert_response :success
   end
 end

@@ -13,11 +13,12 @@ Spaced Repetition Project
   - Need to have a redis server running on the default (6379) port
   - need to setup the current server url in the .env file (and possibly the secrets for production)
   - typical Rails 5 application deployment : rake db:migrate, rake db:seed
+  - deployment with 'cap production deploy' command
   
   # Usage
   - After speed, my second focus was ease of use, so the API is simple:
     - Step 1: get the cards data (id => question/answer) with the /cards call
-    - Step 2: get the list of cards to study next with the /study_schedule call
+    - Step 2: get the list of cards to study next with the /todays_session call
     - Step 3: Assess (= rate, review) a card with the /assessments call
     - (Back to step 2, the list of cards to review should have been updated correctly)
     - Step 4: There are a number of /statistics api call available.
@@ -29,11 +30,14 @@ Spaced Repetition Project
   - Currently there is only one deck of cards, no custom deck per user
 
   # Future expansion
-  - JSON API complient?
+  - make the API JSON API complient?
   - It should be easy to swap the SM2 algorithm for another
   - Didn't do any performance measurement
   - Backup of the redis content to S3
   - Use several instances of redis (one per core), split between users
+  - todays_session originally contains all card in the deck, may be split up in X cards per day
+  - It should be easy to add access to "tomorrow's session" in advance when today's session is finished
+  - $redis variable is global.
 
 # Description
 

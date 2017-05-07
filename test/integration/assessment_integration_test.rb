@@ -14,12 +14,11 @@ class AssessmentIntegrationTest < ActionDispatch::IntegrationTest
         headers: { token: @user.token }
     data = JSON.parse response.body
     deck = data['deck']
-    server_time = data['server_time']
     
     card_id = deck[0][0]
     card_time = deck[0][1]
     # Make sure that the card is overdue
-    assert( card_time <= server_time )
+    assert(card_time <= Time.now.to_i)
 
     # Rate the card several times and make sure the card time increases accordingly
     post "/api/v1/assessments/#{card_id}",
@@ -30,8 +29,7 @@ class AssessmentIntegrationTest < ActionDispatch::IntegrationTest
         headers: { token: @user.token }
     data = JSON.parse response.body
     deck = data['deck']
-    _card_id_2, card_time_2 = deck.find{|id,time| id == card_id }
-    server_time = data['server_time']
+    _card_id_2, card_time_2 = deck.find { |id,time| id == card_id }
     
     # The card should be due in ~ 1.day, takes one minute error margin
     expected_time = 1.day.from_now.to_i
@@ -47,12 +45,10 @@ class AssessmentIntegrationTest < ActionDispatch::IntegrationTest
         headers: { token: @user.token }
     data = JSON.parse response.body
     deck = data['deck']
-    _card_id_3, card_time_3 = deck.find{|id,time| id == card_id }
-    server_time = data['server_time']
-    
+    _card_id_3, card_time_3 = deck.find { |id, _time| id == card_id }
+
     # The card should be due in ~ 6.days, takes one minute error margin
     expected_time = 6.days.from_now.to_i
-    assert(card_time_3 > expected_time - 60)
-    assert(card_time_3 < expected_time + 60)
+    assert_in_delta(expected_time, card_time_3, 60)
   end
 end

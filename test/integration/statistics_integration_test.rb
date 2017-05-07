@@ -19,10 +19,10 @@ class StatisticsIntegrationTest < ActionDispatch::IntegrationTest
     # Assess two cards and check that we have less cards overdue
     post "/api/v1/assessments/#{Card.first.id}",
          headers: { token: @user.token },
-         params: { rating: 5 }
+         params: { rating: 5, elapsed_time: 1000 }
     post "/api/v1/assessments/#{Card.second.id}",
          headers: { token: @user.token },
-         params: { rating: 5 }
+         params: { rating: 5, elapsed_time: 1000 }
     get '/api/v1/statistics/forecast', headers: { token: @user.token }
     assert_response :success
     forecast = JSON.parse response.body
@@ -38,13 +38,13 @@ class StatisticsIntegrationTest < ActionDispatch::IntegrationTest
 
     post "/api/v1/assessments/#{Card.second.id}",
          headers: { token: @user.token },
-         params: { rating: 5 }
+         params: { rating: 5, elapsed_time: 1000 }
     post "/api/v1/assessments/#{Card.second.id}",
          headers: { token: @user.token },
-         params: { rating: 5 }
+         params: { rating: 5, elapsed_time: 1000 }
     post "/api/v1/assessments/#{Card.third.id}",
          headers: { token: @user.token },
-         params: { rating: 4 }
+         params: { rating: 4, elapsed_time: 1000 }
     get '/api/v1/statistics/answer_buttons', headers: { token: @user.token }
     assert_response :success
     answer_buttons = JSON.parse response.body

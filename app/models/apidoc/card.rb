@@ -8,7 +8,7 @@ module Apidoc
         key :'$ref', :Card
       end
     end
-  
+
     swagger_schema :Card do
       key :required, [:question, :answer]
       property :question do

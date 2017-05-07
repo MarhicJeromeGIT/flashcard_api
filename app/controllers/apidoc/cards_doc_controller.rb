@@ -21,8 +21,7 @@ module Apidoc
     swagger_path '/study_schedule' do
       operation :get do
         key :description, 'For each card, return the time (as a timestamp) when the ' \
-                          'card has to be studied next. Sorted by increasing time. ' \
-                          'Also provide the server current time for reference.'
+                          'card has to be studied next. Sorted by increasing time. '
         key :operationId, 'study_schedule'
         key :tags, [
           'cards'
@@ -48,6 +47,29 @@ module Apidoc
           key :description, 'schedule response'
           schema do
             key :'$ref', :StudySchedule
+          end
+        end
+      end
+    end
+
+    swagger_path '/todays_session' do
+      operation :get do
+        key :description, 'Return today\'s study schedule: ' \
+                          'the cards ids that are overdue for studying, or that ' \
+                          'have been failed, in the order that they should be studied. '
+        key :operationId, 'todays_session'
+        key :tags, [
+          'cards'
+        ]
+        parameter :token
+        response 200 do
+          key :description, 'todays session response'
+          schema do
+            key :type, :array
+            items do
+              key :type, :integer
+              key :description, 'card id'
+            end
           end
         end
       end

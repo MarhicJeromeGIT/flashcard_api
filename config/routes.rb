@@ -1,13 +1,18 @@
 Rails.application.routes.draw do
-  root to: "apidoc/apidoc#index", defaults: { format: 'json' }
-  
+  root to: 'apidoc/apidoc#index', defaults: { format: 'json' }
+
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
   namespace :api do
     namespace :v1 do
       get 'authenticate', to: 'application#authenticate_user'
       get 'study_schedule', to: 'cards#study_schedule'
+      get 'todays_session', to: 'cards#todays_session'
       get 'cards', to: 'cards#index'
       post 'assessments/:card_id', to: 'assessments#assess'
+
+      scope :user do
+        post 'reset_deck', to: 'users#reset_deck'
+      end
 
       scope :statistics do
         get 'forecast', to: 'statistics#forecast'
