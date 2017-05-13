@@ -20,9 +20,9 @@ class SM2Test < ActiveSupport::TestCase
   end
 
   test 'interval ending conditions' do
-    interval = SM2.new.interval(repetition: 1, e_factor: 5)
+    interval = SM2.new.interval(repetitions: 1, e_factor: 5)
     assert_equal(1.day, interval)
-    interval = SM2.new.interval(repetition: 2, e_factor: 4)
+    interval = SM2.new.interval(repetitions: 2, e_factor: 4)
     assert_equal(6.days, interval)
   end
 end

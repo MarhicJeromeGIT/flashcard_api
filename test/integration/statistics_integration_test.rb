@@ -57,7 +57,7 @@ class StatisticsIntegrationTest < ActionDispatch::IntegrationTest
     get '/api/v1/statistics/cumulative_time', headers: { token: @user.token }
     assert_response :success
     cumulative_time = JSON.parse response.body
-    assert_equal(Card.count, cumulative_time.keys.count)
+    assert_equal(0, cumulative_time.keys.count)
     assert(cumulative_time.values.all?(&:zero?))
 
     post "/api/v1/assessments/#{Card.second.id}",

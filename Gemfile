@@ -53,6 +53,7 @@ gem 'rubocop', require: false
 # Use redis for caching
 gem 'redis-rails'
 gem 'redis-namespace'
+gem 'redis-persistence'
 # Define and serve live-updating Swagger JSON for Ruby apps.
 gem 'swagger-blocks'
 gem 'rack-cors', :require => 'rack/cors'

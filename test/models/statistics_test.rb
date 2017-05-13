@@ -25,39 +25,40 @@ class StatisticsTest < ActiveSupport::TestCase
   end
 
   test 'the answer buttons statistics are correct' do
-    # Add assessments to random cards
+    # Create assessments for random cards
     expected_answer_buttons = Hash.new(0)
+    assessments = {}
     100.times do
       rating = rand(5)
       expected_answer_buttons[rating] += 1
       card_id = Card.offset(rand(Card.count)).first.id
-      assert(card_id >= 1)
-      assert(card_id <= Card.last.id)
-      response = Assessment.add(
-        user_id: @user.id,
-        card_id: Card.offset(rand(Card.count)).first.id,
-        elapsed_time: 0,
-        rating: rating
-      )
-      assert(response)
+      assessment = {
+        'elapsed_time' => 0,
+        'rating' => rating
+      }
+      assessments[card_id] = [] unless assessments[card_id]
+      assessments[card_id] << assessment
     end
-    answer_buttons = Statistics.answer_buttons(user_id: @user.id)
+    answer_buttons = Statistics.answer_buttons(assessments: assessments)
     assert_equal(answer_buttons, expected_answer_buttons)
   end
 
   test 'the cumulative time statistics are correct' do
     # Add assessments to random cards
     expected_cumulative_times = Hash.new(0)
+    assessments = {}
     100.times do
       elapsed_time = rand(10000)
       card_id = Card.offset(rand(Card.count)).first.id
       expected_cumulative_times[card_id] += elapsed_time
-      Assessment.add(user_id: @user.id,
-                     card_id: card_id,
-                     elapsed_time: elapsed_time,
-                     rating: 0)
+      assessment = {
+        'elapsed_time' => elapsed_time,
+        'rating' => 0
+      }
+      assessments[card_id] = [] unless assessments[card_id]
+      assessments[card_id] << assessment
     end
-    cumulative_time = Statistics.cumulative_time(user_id: @user.id)
+    cumulative_time = Statistics.cumulative_time(assessments: assessments)
     assert_equal(cumulative_time.slice(*expected_cumulative_times.keys), expected_cumulative_times)
   end
 end

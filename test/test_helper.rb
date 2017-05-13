@@ -10,11 +10,6 @@ class ActiveSupport::TestCase
   include FactoryGirl::Syntax::Methods
 
   def clear_redis
-    # Only clear the keys that belong to our namespace
-    namespace = $redis.namespace
-    keys = $redis.redis.keys.select { |key| key.starts_with? namespace }
-    keys.each do |key|
-      $redis.redis.del key
-    end
+    $redis.redis.flushdb
   end
 end

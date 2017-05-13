@@ -24,8 +24,7 @@ module Api::V1
       deck_params[:per_page] = params[:per_page].to_i if params[:per_page].present?
       deck = @current_user.deck(deck_params)
       render json: {
-        deck: deck,
-        server_time: Time.now.to_i
+        deck: deck
       }
     end
 
