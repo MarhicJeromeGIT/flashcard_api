@@ -82,6 +82,7 @@ GEM
     globalid (0.4.0)
       activesupport (>= 4.2.0)
     hashr (0.0.22)
+    hiredis (0.6.1)
     i18n (0.8.1)
     jsonapi-renderer (0.1.2)
     listen (3.0.8)
@@ -98,12 +99,18 @@ GEM
     mini_portile2 (2.1.0)
     minitest (5.10.1)
     multi_json (1.12.1)
+    nest (3.1.1)
+      redic
     net-scp (1.2.1)
       net-ssh (>= 2.6.5)
     net-ssh (4.1.0)
     nio4r (2.0.0)
     nokogiri (1.7.1)
       mini_portile2 (~> 2.1.0)
+    ohm (3.1.1)
+      nest (~> 3)
+      redic (~> 1.5.0)
+      stal
     parser (2.4.0.0)
       ast (~> 2.2)
     powerpack (0.1.1)
@@ -141,6 +148,8 @@ GEM
     rb-fsevent (0.9.8)
     rb-inotify (0.9.8)
       ffi (>= 0.5.0)
+    redic (1.5.0)
+      hiredis
     redis (3.3.3)
     redis-actionpack (5.0.1)
       actionpack (>= 4.0, < 6)
@@ -188,6 +197,8 @@ GEM
     sshkit (1.13.1)
       net-scp (>= 1.1.2)
       net-ssh (>= 2.8.0)
+    stal (0.3.0)
+      redic (~> 1.5)
     swagger-blocks (2.0.0)
     thor (0.19.4)
     thread_safe (0.3.6)
@@ -212,6 +223,7 @@ DEPENDENCIES
   dotenv-rails
   factory_girl_rails (~> 4.0)
   listen (~> 3.0.5)
+  ohm
   puma (~> 3.0)
   rack-cors
   rails (~> 5.0.2)

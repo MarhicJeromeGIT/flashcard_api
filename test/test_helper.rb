@@ -11,5 +11,6 @@ class ActiveSupport::TestCase
 
   def clear_redis
     $redis.redis.flushdb
+    Ohm.flush
   end
 end

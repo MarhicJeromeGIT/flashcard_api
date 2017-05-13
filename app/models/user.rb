@@ -9,27 +9,28 @@
 class User < ApplicationRecord
   after_create :initialize_deck
 
+  # To make it work with Ohm
+  # because User is not a Ohm::Model
+  def self.[](index)
+    User.find_by_id(index)
+  end
+
   # The persistence layer
   def data
     @data || @data = load_user_data
+  end
+
+  def load_user_data
+    UserData.find(user_id: id).first || UserData.create(user: self)
   end
 
   def repetition_algorithm
     @sm2 || @sm2 = SM2.new
   end
 
-  def redis_namespace
-    "sm2_#{Rails.env}/users/#{id}"
-  end
-
-  def load_user_data
-    db = { 'development' => 0, 'test' => 1, 'production' => 2 }[Rails.env]
-    redis = Redis::Namespace.new(redis_namespace, redis: Redis.new(db: db))
-    UserData.new(redis)
-  end
-
   def deck(page: 1, per_page: 0)
-    data.deck(page: page, per_page: per_page)
+    deck = data.decks.first
+    deck.deck(page: page, per_page: per_page)
   end
 
   # The user assess (rates) a card. Update the different
@@ -43,7 +44,8 @@ class User < ApplicationRecord
     data.update_card_data(card_id: card_id, card_data: evaluation[:card_data])
 
     # Remember the next time the card should be shown to the user
-    data.update_card_interval(interval: evaluation[:interval], card_id: card_id)
+    deck = data.decks.first
+    deck.update_card_interval(interval: evaluation[:interval], card_id: card_id)
   end
 
   # Given a new user, initialize it's cards deck
@@ -52,20 +54,23 @@ class User < ApplicationRecord
   def initialize_deck
     # Delete the redis user data
     data.reset
+    deck = data.create_deck
     Card.all.each do |card|
       # zadd key, score, value
-      data.update_card_interval(interval: 0.second, card_id: card.id)
+      deck.update_card_interval(interval: 0.second, card_id: card.id)
     end
   end
 
   # Repetition session: cards to study today.
   def todays_session
-    data.todays_session
+    deck = data.decks.first
+    deck.todays_session
   end
 
   # How many vocabulary words a user needs to review in the future.
   def forecast
-    Statistics.forecast(deck: data.deck)
+    deck = data.decks.first
+    Statistics.forecast(deck: deck.deck)
   end
 
   # How many times they've used each answer choice

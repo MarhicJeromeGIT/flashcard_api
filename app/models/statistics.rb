@@ -17,24 +17,19 @@ class Statistics < ApplicationRecord
 
   def self.answer_buttons(assessments:)
     buttons = Hash.new(0)
-    assessments.keys.each do |card_id|
-      card_assessments = assessments[card_id]
-      card_assessments.each do |assessment|
-        rating = assessment['rating']
-        buttons[rating] += 1
-      end
+    assessments.each do |assessment|
+      rating = assessment.rating.to_i
+      buttons[rating] += 1
     end
     buttons
   end
 
   def self.cumulative_time(assessments:)
     times = Hash.new(0)
-    assessments.keys.each do |card_id|
-      card_assessments = assessments[card_id]
-      card_assessments.each do |assessment|
-        elapsed_time = assessment['elapsed_time']
-        times[card_id] += elapsed_time
-      end
+    assessments.each do |assessment|
+      elapsed_time = assessment.elapsed_time.to_i
+      card_id = assessment.card_id.to_i
+      times[card_id] += elapsed_time
     end
     times
   end
